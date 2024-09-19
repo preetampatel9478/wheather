@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Weather Update</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="box">
+        <input type="text" id="search" value="state">
+        <div>
+            <h1 id="temp"><sup>o</sup></h1>
+            <p style="text-align:center; font-size: 40px;">Celsius</p>
+            <p class="data">Wind speed: <span id="ws">20</span> km/h</p>
+            <p class="data">Humidity: <span id="hmdty">20</span>%</p>
+        </div>
+        <div style="display: flex; justify-content: center;">
+            <img width="400px" src="weather.png" alt="Weather Icon">
+        </div>
+    </div>
+    <script>
+        const fetchWeather = async (city) => {
+            const url = `https://weather-by-api-ninjas.p.rapidapi.com/v1/weather?city=${city}`;
+            const options = {
+                method: 'GET',
+                headers: {
+                    'X-RapidAPI-Key': 'd30d596bccmsh1342d42800ae123p1fdca4jsn98d98703f07f',
+                    'X-RapidAPI-Host': 'weather-by-api-ninjas.p.rapidapi.com'
+                }
+            };
+
+            try {
+                const response = await fetch(url, options);
+                const result = await response.json();
+                console.getElementById('temp').innerHTML = `${result.temp}<sup>o</sup>`;
+                console.getElementById('ws').textContent = result.wind_speed;
+                console.getElementById('hmdty').textContent = result.humidity;
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+        // Fetch weather for the initial city
+        fetchWeather('city',function(e));
+
+        // Add an event listener to the input field to fetch weather on enter key press
+        document.getElementById('search').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                fetchWeather(this.value);
+            }
+        });
+    </script>
+</body>
+</html>
