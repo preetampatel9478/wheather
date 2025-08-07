@@ -6,41 +6,45 @@
 </head>
 <body>
     <div class="box">
-        <input type="text" id="search" value="state">
-        <div>
-            <h1 id="temp"><sup>o</sup></h1>
-            <p style="text-align:center; font-size: 40px;">Celsius</p>
-            <p class="data">Wind speed: <span id="ws">20</span> km/h</p>
-            <p class="data">Humidity: <span id="hmdty">20</span>%</p>
+        <input type="text" id="search" value="state" placeholder="Enter city or state name" style="margin-bottom: 20px;">
+        <div id="weather-data" style="width:100%;">
+            <h1 id="temp" style="font-size: 120px; text-align:center; color:white;"><sup>o</sup></h1>
+            <p style="text-align:center; font-size: 40px; color:black;">Celsius</p>
+            <p class="data">Wind speed: <span id="ws">--</span> km/h</p>
+            <p class="data">Humidity: <span id="hmdty">--</span>%</p>
         </div>
         <div style="display: flex; justify-content: center;">
-            <img width="400px" src="weather.png" alt="Weather Icon">
+            <img width="200px" src="weather.png" alt="Weather Icon">
         </div>
     </div>
     <script>
+        const apikey = "027f0432840d0817c59a6a3238a39530";
         const fetchWeather = async (city) => {
-            const url = `https://weather-by-api-ninjas.p.rapidapi.com/v1/weather?city=${city}`;
-            const options = {
-                method: 'GET',
-                headers: {
-                    'X-RapidAPI-Key': 'd30d596bccmsh1342d42800ae123p1fdca4jsn98d98703f07f',
-                    'X-RapidAPI-Host': 'weather-by-api-ninjas.p.rapidapi.com'
-                }
-            };
-
+            const url = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&units=metric&appid=${apikey}`;
             try {
-                const response = await fetch(url, options);
+                const response = await fetch(url);
                 const result = await response.json();
-                console.getElementById('temp').innerHTML = `${result.temp}<sup>o</sup>`;
-                console.getElementById('ws').textContent = result.wind_speed;
-                console.getElementById('hmdty').textContent = result.humidity;
+                if (result.cod === 200) {
+                    document.getElementById('temp').innerHTML = `${result.main.temp}<sup>o</sup>`;
+                    document.getElementById('ws').textContent = result.wind.speed;
+                    document.getElementById('hmdty').textContent = result.main.humidity;
+                } else {
+                    document.getElementById('temp').innerHTML = `N/A<sup>o</sup>`;
+                    document.getElementById('ws').textContent = '--';
+                    document.getElementById('hmdty').textContent = '--';
+                }
             } catch (error) {
+                document.getElementById('temp').innerHTML = `N/A<sup>o</sup>`;
+                document.getElementById('ws').textContent = '--';
+                document.getElementById('hmdty').textContent = '--';
                 console.error(error);
             }
         };
 
-        // Fetch weather for the initial city
-        fetchWeather('city',function(e));
+        // Fetch weather for the initial city in the input box
+        window.onload = function() {
+            fetchWeather(document.getElementById('search').value);
+        };
 
         // Add an event listener to the input field to fetch weather on enter key press
         document.getElementById('search').addEventListener('keypress', function (e) {
